@@ -22,6 +22,17 @@ margin-top:20px;
 margin:10px;
 }
 
+#menu {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#setSelector {
+  width: 200px;
+  height: 40px;
+  font-size: 16px;
+}
+  
 button{
 padding:10px 16px;
 font-size:16px;
@@ -81,16 +92,18 @@ border-radius:10px;
 
 <h1>Wer bin ich? </h1>
 
+<div id="menu">
+  <select id="setSelector" onchange="changeSet()">
+    <option value="overwatch">Overwatch</option>
+    <option value="disney">Disney</option>
+  </select>
+</div>
+
 <div id="controls">
 <button onclick="resetGame()">Reset</button>
 </div>
 
 <div id="game">
-
-<select id="setSelector" onchange="changeSet()">
-  <option value="overwatch">Overwatch</option>
-  <option value="disney">Disney</option>
-</select>
 
 <div id="grid"></div>
 
@@ -139,9 +152,9 @@ const heroes = [
 ];
 
 const disneyCharacters = [
-  { name: "Mickey", image: "mickey.png" },
-  { name: "Elsa", image: "elsa.png" },
-  { name: "Simba", image: "simba.png" },
+  { name: "Mickey", image: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Mickey_Mouse.png" },
+  { name: "Minnie", image: "https://upload.wikimedia.org/wikipedia/commons/5/5d/Minnie_Mouse.png" },
+  { name: "Donald Duck", image: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Donald_Duck.png" },
 
 ];
 

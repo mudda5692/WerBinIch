@@ -3,7 +3,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Wer bin ich – Overwatch</title>
+<title>Wer bin ich</title>
 
 <style>
 body{
@@ -87,6 +87,11 @@ border-radius:10px;
 
 <div id="game">
 
+<select id="setSelector" onchange="changeSet()">
+  <option value="overwatch">Overwatch</option>
+  <option value="disney">Disney</option>
+</select>
+
 <div id="grid"></div>
 
 <div id="chosen">
@@ -133,6 +138,15 @@ const heroes = [
 {name:"Zenyatta",img:"https://blzgdapipro-a.akamaihd.net/hero/zenyatta/icon-portrait.png"}
 ];
 
+const disneyCharacters = [
+  { name: "Mickey", image: "mickey.png" },
+  { name: "Elsa", image: "elsa.png" },
+  { name: "Simba", image: "simba.png" },
+
+];
+
+let currentCharacters = heroes;
+
 const grid = document.getElementById("grid");
 const chosenHero = document.getElementById("chosenHero");
 const info = document.getElementById("info");
@@ -143,7 +157,7 @@ function createGrid(){
 
 grid.innerHTML="";
 
-heroes.forEach(hero=>{
+currentCharacters.forEach(hero=>{
 
 const card=document.createElement("div");
 card.className="card";
@@ -190,6 +204,21 @@ chosenHero.innerHTML="Noch keiner gewählt";
 info.textContent="Wähle zuerst einen Charakter.";
 createGrid();
 
+}
+
+
+
+function changeSet(){
+
+  const selected = document.getElementById("setSelector").value;
+
+  if(selected === "overwatch"){
+    currentCharacters = heroes;
+  } else {
+    currentCharacters = disneyCharacters;
+  }
+
+  createGrid();
 }
 
 createGrid();

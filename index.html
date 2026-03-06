@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Wer bin ich – Overwatch</title>
+
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#121212;
+color:white;
+text-align:center;
+margin:0;
+}
+
+h1{
+margin-top:20px;
+}
+
+#controls{
+margin:10px;
+}
+
+button{
+padding:10px 16px;
+font-size:16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+#game{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+#grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,110px);
+gap:10px;
+max-width:900px;
+padding:20px;
+}
+
+.card{
+background:#1e1e1e;
+border-radius:10px;
+padding:6px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.card img{
+width:100%;
+border-radius:8px;
+}
+
+.card.disabled{
+opacity:0.25;
+}
+
+.card.selected{
+outline:3px solid orange;
+}
+
+#chosen{
+width:220px;
+padding:20px;
+}
+
+#chosen img{
+width:100%;
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Wer bin ich? </h1>
+
+<div id="controls">
+<button onclick="resetGame()">Reset</button>
+</div>
+
+<div id="game">
+
+<div id="grid"></div>
+
+<div id="chosen">
+<h3>Dein Charakter</h3>
+<div id="chosenHero">Noch keiner gewählt</div>
+<p id="info">Wähle zuerst einen Charakter.</p>
+</div>
+
+</div>
+
+
+<script>
+
+const heroes = [
+{name:"Ana",img:"https://blzgdapipro-a.akamaihd.net/hero/ana/icon-portrait.png"},
+{name:"Ashe",img:"https://blzgdapipro-a.akamaihd.net/hero/ashe/icon-portrait.png"},
+{name:"Baptiste",img:"https://blzgdapipro-a.akamaihd.net/hero/baptiste/icon-portrait.png"},
+{name:"Bastion",img:"https://blzgdapipro-a.akamaihd.net/hero/bastion/icon-portrait.png"},
+{name:"Brigitte",img:"https://blzgdapipro-a.akamaihd.net/hero/brigitte/icon-portrait.png"},
+{name:"Cassidy",img:"https://blzgdapipro-a.akamaihd.net/hero/cassidy/icon-portrait.png"},
+{name:"D.Va",img:"https://blzgdapipro-a.akamaihd.net/hero/dva/icon-portrait.png"},
+{name:"Doomfist",img:"https://blzgdapipro-a.akamaihd.net/hero/doomfist/icon-portrait.png"},
+{name:"Echo",img:"https://blzgdapipro-a.akamaihd.net/hero/echo/icon-portrait.png"},
+{name:"Genji",img:"https://blzgdapipro-a.akamaihd.net/hero/genji/icon-portrait.png"},
+{name:"Hanzo",img:"https://blzgdapipro-a.akamaihd.net/hero/hanzo/icon-portrait.png"},
+{name:"Junkrat",img:"https://blzgdapipro-a.akamaihd.net/hero/junkrat/icon-portrait.png"},
+{name:"Kiriko",img:"IMG_9942.jpeg"},
+{name:"Lucio",img:"https://blzgdapipro-a.akamaihd.net/hero/lucio/icon-portrait.png"},
+{name:"Mei",img:"https://blzgdapipro-a.akamaihd.net/hero/mei/icon-portrait.png"},
+{name:"Mercy",img:"https://blzgdapipro-a.akamaihd.net/hero/mercy/icon-portrait.png"},
+{name:"Moira",img:"https://blzgdapipro-a.akamaihd.net/hero/moira/icon-portrait.png"},
+{name:"Pharah",img:"https://blzgdapipro-a.akamaihd.net/hero/pharah/icon-portrait.png"},
+{name:"Reaper",img:"https://blzgdapipro-a.akamaihd.net/hero/reaper/icon-portrait.png"},
+{name:"Reinhardt",img:"https://blzgdapipro-a.akamaihd.net/hero/reinhardt/icon-portrait.png"},
+{name:"Roadhog",img:"https://blzgdapipro-a.akamaihd.net/hero/roadhog/icon-portrait.png"},
+{name:"Sigma",img:"https://blzgdapipro-a.akamaihd.net/hero/sigma/icon-portrait.png"},
+{name:"Soldier 76",img:"IMG_9943.jpeg"},
+{name:"Sombra",img:"https://blzgdapipro-a.akamaihd.net/hero/sombra/icon-portrait.png"},
+{name:"Symmetra",img:"https://blzgdapipro-a.akamaihd.net/hero/symmetra/icon-portrait.png"},
+{name:"Tracer",img:"https://blzgdapipro-a.akamaihd.net/hero/tracer/icon-portrait.png"},
+{name:"Widowmaker",img:"https://blzgdapipro-a.akamaihd.net/hero/widowmaker/icon-portrait.png"},
+{name:"Winston",img:"https://blzgdapipro-a.akamaihd.net/hero/winston/icon-portrait.png"},
+{name:"Zarya",img:"https://blzgdapipro-a.akamaihd.net/hero/zarya/icon-portrait.png"},
+{name:"Zenyatta",img:"https://blzgdapipro-a.akamaihd.net/hero/zenyatta/icon-portrait.png"}
+];
+
+const grid = document.getElementById("grid");
+const chosenHero = document.getElementById("chosenHero");
+const info = document.getElementById("info");
+
+let gameStarted=false;
+
+function createGrid(){
+
+grid.innerHTML="";
+
+heroes.forEach(hero=>{
+
+const card=document.createElement("div");
+card.className="card";
+
+card.innerHTML=`
+<img src="${hero.img}" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${hero.name}'">
+<div>${hero.name}</div>
+`;
+
+card.onclick=()=>{
+
+if(!gameStarted){
+
+document.querySelectorAll(".card").forEach(c=>c.classList.remove("selected"));
+card.classList.add("selected");
+
+chosenHero.innerHTML=`
+<img src="${hero.img}">
+<p>${hero.name}</p>
+`;
+
+info.textContent="Spiel gestartet – klicke Charaktere weg";
+
+gameStarted=true;
+
+}else{
+
+card.classList.toggle("disabled");
+
+}
+
+};
+
+grid.appendChild(card);
+
+});
+
+}
+
+function resetGame(){
+
+gameStarted=false;
+chosenHero.innerHTML="Noch keiner gewählt";
+info.textContent="Wähle zuerst einen Charakter.";
+createGrid();
+
+}
+
+createGrid();
+
+</script>
+
+</body>
+</html>

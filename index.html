@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Wer bin ich – Overwatch</title>
+
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#121212;
+color:white;
+text-align:center;
+margin:0;
+}
+
+h1{
+margin-top:20px;
+}
+
+#controls{
+margin:10px;
+}
+
+button{
+padding:10px 16px;
+font-size:16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+#game{
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+}
+
+#grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,110px);
+gap:10px;
+max-width:900px;
+padding:20px;
+}
+
+.card{
+background:#1e1e1e;
+border-radius:10px;
+padding:6px;
+cursor:pointer;
+transition:0.2s;
+}
+
+.card img{
+width:100%;
+border-radius:8px;
+}
+
+.card.disabled{
+opacity:0.25;
+}
+
+.card.selected{
+outline:3px solid orange;
+}
+
+#chosen{
+width:220px;
+padding:20px;
+}
+
+#chosen img{
+width:100%;
+border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Wer bin ich? – Overwatch</h1>
+
+<div id="controls">
+<button onclick="resetGame()">Reset</button>
+</div>
+
+<div id="game">
+
+<div id="grid"></div>
+
+<div id="chosen">
+<h3>Dein Charakter</h3>
+<div id="chosenHero">Noch keiner gewählt</div>
+<p id="info">Wähle zuerst einen Charakter.</p>
+</div>
+
+</div>
+
+
+<script>
+
+const heroes = [
+{name:"Ana",img:"https://blzgdapipro-a.akamaihd.net/hero/ana/icon-portrait.png"},
+{name:"Ashe",img:"https://blzgdapipro-a.akamaihd.net/hero/ashe/icon-portrait.png"},
+{name:"Baptiste",img:"https://blzgdapipro-a.akamaihd.net/hero/baptiste/icon-portrait.png"},
+{name:"Bastion",img:"https://blzgdapipro-a.akamaihd.net/hero/bastion/icon-portrait.png"},
+{name:"Brigitte",img:"https://upload.wikimedia.org/wikipedia/en/3/3c/Brigitte_Overwatch.png"},
+{name:"Cassidy",img:"https://upload.wikimedia.org/wikipedia/en/1/1b/Cassidy_Overwatch.png"},
+{name:"D.Va",img:"https://upload.wikimedia.org/wikipedia/en/2/2c/DVa_Overwatch.png"},
+{name:"Doomfist",img:"https://upload.wikimedia.org/wikipedia/en/1/19/Doomfist_Overwatch.png"},
+{name:"Echo",img:"https://upload.wikimedia.org/wikipedia/en/1/18/Echo_Overwatch.png"},
+{name:"Genji",img:"https://upload.wikimedia.org/wikipedia/en/2/2a/Genji_Overwatch.png"},
+{name:"Hanzo",img:"https://upload.wikimedia.org/wikipedia/en/7/76/Hanzo_Overwatch.png"},
+{name:"Junkrat",img:"https://upload.wikimedia.org/wikipedia/en/5/5d/Junkrat_Overwatch.png"},
+{name:"Kiriko",img:"https://upload.wikimedia.org/wikipedia/en/6/6c/Kiriko_Overwatch.png"},
+{name:"Lucio",img:"https://upload.wikimedia.org/wikipedia/en/8/8c/Lucio_Overwatch.png"},
+{name:"Mei",img:"https://upload.wikimedia.org/wikipedia/en/9/9d/Mei_Overwatch.png"},
+{name:"Mercy",img:"https://upload.wikimedia.org/wikipedia/en/0/03/Mercy_Overwatch.png"},
+{name:"Moira",img:"https://upload.wikimedia.org/wikipedia/en/2/2f/Moira_Overwatch.png"},
+{name:"Pharah",img:"https://upload.wikimedia.org/wikipedia/en/9/9c/Pharah_Overwatch.png"},
+{name:"Reaper",img:"https://upload.wikimedia.org/wikipedia/en/0/0b/Reaper_Overwatch.png"},
+{name:"Reinhardt",img:"https://upload.wikimedia.org/wikipedia/en/7/79/Reinhardt_Overwatch.png"},
+{name:"Roadhog",img:"https://upload.wikimedia.org/wikipedia/en/7/79/Roadhog_Overwatch.png"},
+{name:"Sigma",img:"https://upload.wikimedia.org/wikipedia/en/3/34/Sigma_Overwatch.png"},
+{name:"Soldier 76",img:"https://upload.wikimedia.org/wikipedia/en/7/7d/Soldier76_Overwatch.png"},
+{name:"Sombra",img:"https://upload.wikimedia.org/wikipedia/en/4/4c/Sombra_Overwatch.png"},
+{name:"Symmetra",img:"https://upload.wikimedia.org/wikipedia/en/6/6b/Symmetra_Overwatch.png"},
+{name:"Tracer",img:"https://upload.wikimedia.org/wikipedia/en/7/73/Tracer_Overwatch.png"},
+{name:"Widowmaker",img:"https://upload.wikimedia.org/wikipedia/en/5/54/Widowmaker_Overwatch.png"},
+{name:"Winston",img:"https://upload.wikimedia.org/wikipedia/en/8/81/Winston_Overwatch.png"},
+{name:"Zarya",img:"https://upload.wikimedia.org/wikipedia/en/1/12/Zarya_Overwatch.png"},
+{name:"Zenyatta",img:"https://upload.wikimedia.org/wikipedia/en/4/46/Zenyatta_Overwatch.png"}
+];
+
+const grid = document.getElementById("grid");
+const chosenHero = document.getElementById("chosenHero");
+const info = document.getElementById("info");
+
+let gameStarted=false;
+
+function createGrid(){
+
+grid.innerHTML="";
+
+heroes.forEach(hero=>{
+
+const card=document.createElement("div");
+card.className="card";
+
+card.innerHTML=`
+<img src="${hero.img}" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${hero.name}'">
+<div>${hero.name}</div>
+`;
+
+card.onclick=()=>{
+
+if(!gameStarted){
+
+document.querySelectorAll(".card").forEach(c=>c.classList.remove("selected"));
+card.classList.add("selected");
+
+chosenHero.innerHTML=`
+<img src="${hero.img}">
+<p>${hero.name}</p>
+`;
+
+info.textContent="Spiel gestartet – klicke Charaktere weg";
+
+gameStarted=true;
+
+}else{
+
+card.classList.toggle("disabled");
+
+}
+
+};
+
+grid.appendChild(card);
+
+});
+
+}
+
+function resetGame(){
+
+gameStarted=false;
+chosenHero.innerHTML="Noch keiner gewählt";
+info.textContent="Wähle zuerst einen Charakter.";
+createGrid();
+
+}
+
+createGrid();
+
+</script>
+
+</body>
+</html>

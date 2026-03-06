@@ -96,6 +96,7 @@ border-radius:10px;
   <select id="setSelector" onchange="changeSet()">
     <option value="overwatch">Overwatch</option>
     <option value="disney">Disney</option>
+    <option value="fiktional">Fiktional</option>  
   </select>
 </div>
 
@@ -195,6 +196,50 @@ const disneyCharacters = [
 
 ];
 
+const fiktional = [
+  {name: "Dracula", img:"https://p.kindpng.com/picc/s/207-2070618_conde-dracula-hotel-transylvania-hd-png-download.png" },
+  {name: "Frankenstein", img:"https://p.kindpng.com/picc/s/149-1493145_frankenstein-clipart-8-clipartix-frankenstein-clipart-hd-png.png" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  {name: "", img:"" },
+  
+];
+
 let currentCharacters = heroes;
 
 const grid = document.getElementById("grid");
@@ -262,13 +307,19 @@ function changeSet(){
 
   const selected = document.getElementById("setSelector").value;
 
-  if(selected === "overwatch"){
-    currentCharacters = heroes;
-  } else {
-    currentCharacters = disneyCharacters;
-  }
+ if(selected === "overwatch"){
+   currentCharacters = heroes;
+ }
 
-  createGrid();
+ else if(selected === "disney"){
+   currentCharacters = disneyCharacters;
+ }
+
+ else if(selected === "fiktional"){
+   currentCharacters = fiktional;
+ }
+
+ createGrid();
 }
 
 createGrid();

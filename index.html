@@ -1,330 +1,365 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Wer bin ich</title>
-
-<style>
-body{
-font-family: Arial, sans-serif;
-background:#121212;
-color:white;
-text-align:center;
-margin:0;
-}
-
-h1{
-margin-top:20px;
-}
-
-#controls{
-margin:10px;
-}
-
-#menu {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-#setSelector {
-  width: 200px;
-  height: 40px;
-  font-size: 16px;
-}
-  
-button{
-padding:10px 16px;
-font-size:16px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-#game{
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-}
-
-#grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,110px);
-gap:10px;
-max-width:900px;
-padding:20px;
-}
-
-.card{
-background:#1e1e1e;
-border-radius:10px;
-padding:6px;
-cursor:pointer;
-transition:0.2s;
-}
-
-.card img{
-width:100%;
-border-radius:8px;
-}
-
-.card.disabled{
-opacity:0.25;
-}
-
-.card.selected{
-outline:3px solid orange;
-}
-
-#chosen{
-width:220px;
-padding:20px;
-}
-
-#chosen img{
-width:100%;
-border-radius:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wer bin ich? - Das Ratespiel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #121212; color: white; }
+        .card-disabled { opacity: 0.25; }
+        .card-disabled .cross { display: block; }
+        .card-selected { outline: 3px solid #f97316; }
+        .aspect-square { aspect-ratio: 1 / 1; }
+    </style>
 </head>
+<body class="min-h-screen selection:bg-orange-500/30">
 
-<body>
+    <header class="py-8 px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+            Wer bin ich?
+        </h1>
 
-<h1>Wer bin ich? </h1>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <select id="categorySelect" onchange="changeCategory()" class="bg-[#1e1e1e] border border-white/10 rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all cursor-pointer w-full sm:w-64">
+                <option value="overwatch">Overwatch</option>
+                <option value="disney">Disney</option>
+                <option value="fiktional">Fiktional</option>
+                <option value="lol">League of Legends</option>
+                <option value="actors">Schauspieler</option>
+            </select>
 
-<div id="menu">
-  <select id="setSelector" onchange="changeSet()">
-    <option value="overwatch">Overwatch</option>
-    <option value="disney">Disney</option>
-    <option value="fiktional">Fiktional</option>  
-  </select>
-</div>
+            <button onclick="resetGame()" class="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold transition-all active:scale-95 shadow-lg shadow-orange-900/20">
+                <span>↻</span> Reset
+            </button>
+        </div>
+    </header>
 
-<div id="controls">
-<button onclick="resetGame()">Reset</button>
-</div>
+    <main class="max-w-7xl mx-auto px-4 pb-20 flex flex-col lg:flex-row gap-8">
+        <!-- Grid Section -->
+        <div class="flex-1">
+            <div id="characterGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+                <!-- Cards will be injected here -->
+            </div>
+        </div>
 
-<div id="game">
+        <!-- Sidebar Section -->
+        <aside class="lg:w-80 shrink-0">
+            <div class="sticky top-8 bg-[#1e1e1e] border border-white/10 rounded-2xl p-6 shadow-2xl">
+                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2 border-b border-white/5 pb-4">
+                    <span class="text-orange-500">👤</span> Dein Charakter
+                </h3>
+                
+                <div id="sidebarContent" class="text-center">
+                    <div class="py-12 text-gray-500">
+                        <p class="font-medium">Noch keiner gewählt</p>
+                        <p class="text-xs mt-2">Wähle zuerst einen Charakter aus dem Raster.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
 
-<div id="grid"></div>
+    <script>
+        const OVERWATCH = [
+            { name: "Ana", img: "https://blzgdapipro-a.akamaihd.net/hero/ana/icon-portrait.png" },
+            { name: "Ashe", img: "https://blzgdapipro-a.akamaihd.net/hero/ashe/icon-portrait.png" },
+            { name: "Baptiste", img: "https://blzgdapipro-a.akamaihd.net/hero/baptiste/icon-portrait.png" },
+            { name: "Bastion", img: "https://blzgdapipro-a.akamaihd.net/hero/bastion/icon-portrait.png" },
+            { name: "Brigitte", img: "https://blzgdapipro-a.akamaihd.net/hero/brigitte/icon-portrait.png" },
+            { name: "Cassidy", img: "https://blzgdapipro-a.akamaihd.net/hero/cassidy/icon-portrait.png" },
+            { name: "D.Va", img: "https://blzgdapipro-a.akamaihd.net/hero/dva/icon-portrait.png" },
+            { name: "Doomfist", img: "https://blzgdapipro-a.akamaihd.net/hero/doomfist/icon-portrait.png" },
+            { name: "Echo", img: "https://blzgdapipro-a.akamaihd.net/hero/echo/icon-portrait.png" },
+            { name: "Genji", img: "https://blzgdapipro-a.akamaihd.net/hero/genji/icon-portrait.png" },
+            { name: "Hanzo", img: "https://blzgdapipro-a.akamaihd.net/hero/hanzo/icon-portrait.png" },
+            { name: "Junkrat", img: "https://blzgdapipro-a.akamaihd.net/hero/junkrat/icon-portrait.png" },
+            { name: "Kiriko", img: "https://blzgdapipro-a.akamaihd.net/hero/kiriko/icon-portrait.png" },
+            { name: "Lucio", img: "https://blzgdapipro-a.akamaihd.net/hero/lucio/icon-portrait.png" },
+            { name: "Mei", img: "https://blzgdapipro-a.akamaihd.net/hero/mei/icon-portrait.png" },
+            { name: "Mercy", img: "https://blzgdapipro-a.akamaihd.net/hero/mercy/icon-portrait.png" },
+            { name: "Moira", img: "https://blzgdapipro-a.akamaihd.net/hero/moira/icon-portrait.png" },
+            { name: "Pharah", img: "https://blzgdapipro-a.akamaihd.net/hero/pharah/icon-portrait.png" },
+            { name: "Reaper", img: "https://blzgdapipro-a.akamaihd.net/hero/reaper/icon-portrait.png" },
+            { name: "Reinhardt", img: "https://blzgdapipro-a.akamaihd.net/hero/reinhardt/icon-portrait.png" },
+            { name: "Roadhog", img: "https://blzgdapipro-a.akamaihd.net/hero/roadhog/icon-portrait.png" },
+            { name: "Sigma", img: "https://blzgdapipro-a.akamaihd.net/hero/sigma/icon-portrait.png" },
+            { name: "Soldier 76", img: "https://blzgdapipro-a.akamaihd.net/hero/soldier-76/icon-portrait.png" },
+            { name: "Sombra", img: "https://blzgdapipro-a.akamaihd.net/hero/sombra/icon-portrait.png" },
+            { name: "Symmetra", img: "https://blzgdapipro-a.akamaihd.net/hero/symmetra/icon-portrait.png" },
+            { name: "Tracer", img: "https://blzgdapipro-a.akamaihd.net/hero/tracer/icon-portrait.png" },
+            { name: "Widowmaker", img: "https://blzgdapipro-a.akamaihd.net/hero/widowmaker/icon-portrait.png" },
+            { name: "Winston", img: "https://blzgdapipro-a.akamaihd.net/hero/winston/icon-portrait.png" },
+            { name: "Zarya", img: "https://blzgdapipro-a.akamaihd.net/hero/zarya/icon-portrait.png" },
+            { name: "Zenyatta", img: "https://blzgdapipro-a.akamaihd.net/hero/zenyatta/icon-portrait.png" }
+        ];
 
-<div id="chosen">
-<h3>Dein Charakter</h3>
-<div id="chosenHero">Noch keiner gewählt</div>
-<p id="info">Wähle zuerst einen Charakter.</p>
-</div>
+        const DISNEY = [
+            { name: "Mickey", img: "https://p.kindpng.com/picc/s/695-6956083_disney-mickey-mouse-clubhouse-png-photo-mickey-mouse.png" },
+            { name: "Minnie", img: "https://p.kindpng.com/picc/s/18-187733_minnie-mouse-png-hd-minnie-mouse-transparent-png.png" },
+            { name: "Donald Duck", img: "https://p.kindpng.com/picc/s/141-1410301_donald-duck-png-transparent-png.png" },
+            { name: "Daisy Duck", img: "https://p.kindpng.com/picc/s/545-5455396_disney-clip-daisy-duck-hd-png-download.png" },
+            { name: "Goofy", img: "https://p.kindpng.com/picc/s/148-1487594_free-download-goofy-mickey-mouse-clipart-goofy-mickey.png" },
+            { name: "Pluto", img: "https://p.kindpng.com/picc/s/169-1693224_download-disney-pluto-transparent-pluto-dog-mickey-mouse.png" },
+            { name: "Snow White", img: "https://p.kindpng.com/picc/s/96-961049_queen-magic-mirror-seven-snow-white-png-transparent.png" },
+            { name: "Cinderella", img: "https://p.kindpng.com/picc/s/119-1196870_cinderella-png-transparent-cinderella-images-cinderella-disney-princess.png" },
+            { name: "Aurora", img: "https://p.kindpng.com/picc/s/9-92930_princess-aurora-cinderella-belle-ariel-rapunzel-princesa-aurora.png" },
+            { name: "Ariel", img: "https://p.kindpng.com/picc/s/79-792714_transparent-little-mermaid-sebastian-png-sirenita-ariel-png.png" },
+            { name: "Belle", img: "https://p.kindpng.com/picc/s/13-139157_belle-png-pic-disney-belle-in-yellow-dress.png" },
+            { name: "Jasmine", img: "https://p.kindpng.com/picc/s/187-1878841_princess-jasmine-png-free-download-cartoon-disney-princess.png" },
+            { name: "Pocahontas", img: "https://p.kindpng.com/picc/s/171-1714225_pocahontas-anna-elsa-fa-mulan-disney-princess-pocahontas.png" },
+            { name: "Mulan", img: "https://p.kindpng.com/picc/s/171-1718776_fa-mulan-png-background-image-mulan-and-the.png" },
+            { name: "Tiana", img: "https://p.kindpng.com/picc/s/231-2315891_princess-tiana-png-image-download-princesa-tiana-de.png" },
+            { name: "Rapunzel", img: "https://p.kindpng.com/picc/s/16-165238_transparent-rapunzel-hair-png-rapunzel-disney-png-download.png" },
+            { name: "Merida", img: "https://p.kindpng.com/picc/s/259-2590631_merida-princesse-disney-hd-png-download.png" },
+            { name: "Elsa", img: "https://p.kindpng.com/picc/s/116-1162517_elsa-png-transparent-high-resolution-elsa-png-png.png" },
+            { name: "Anna", img: "https://p.kindpng.com/picc/s/4-48619_anna-frozen-png-transparent-png.png" },
+            { name: "Simba", img: "https://p.kindpng.com/picc/s/79-790985_simba-png-download-image-simba-png-transparent-png.png" },
+            { name: "Nala", img: "https://p.kindpng.com/picc/s/269-2695077_nala-png-transparent-nala-lion-king-characters-png.png" },
+            { name: "Scar", img: "https://p.kindpng.com/picc/s/139-1397659_scar-cat-december-4-mouth-scar-the-lion.png" },
+            { name: "Timon", img: "https://p.kindpng.com/picc/s/575-5751553_timon-hd-png-download.png" },
+            { name: "Pumbaa", img: "https://p.kindpng.com/picc/s/79-792326_transparent-nala-clipart-pumbaa-from-the-lion-king.png" },
+            { name: "Aladdin", img: "https://p.kindpng.com/picc/s/168-1687550_aladdin-png-transparent-png.png" },
+            { name: "Genie", img: "https://p.kindpng.com/picc/s/99-990800_png-image-of-genie-genie-png-transparent-png.png" },
+            { name: "Jafar", img: "https://p.kindpng.com/picc/s/259-2595794_jafar-jafar-disney-villains-hd-png-download.png" },
+            { name: "Woody", img: "https://p.kindpng.com/picc/s/49-494804_toy-story-4-woody-hd-png-download.png" },
+            { name: "Buzz Lightyear", img: "https://p.kindpng.com/picc/s/30-305838_buzz-lightyear-flying-png-buzz-lightyear-of-star.png" },
+            { name: "Jessie", img: "https://p.kindpng.com/picc/s/375-3757870_download-zip-archive-toy-story-3-jessie-wii.png" },
+            { name: "Sulley", img: "https://p.kindpng.com/picc/s/377-3774847_sulley-wiki-monsters-inc-hd-png-download.png" },
+            { name: "Mike Wazowski", img: "https://p.kindpng.com/picc/s/149-1490354_mike-mikewazowski-mikewazowsky-mikewazowsky-pixar-transparent-mike-wazowski.png" },
+            { name: "Nemo", img: "https://p.kindpng.com/picc/s/39-390613_download-nemo-png-image-disney-infinity-nemo-transparent.png" },
+            { name: "Dory", img: "https://p.kindpng.com/picc/s/39-390658_dory-transparent-image-tv-film-png-images-finding.png" },
+            { name: "Marlin", img: "https://p.kindpng.com/picc/s/310-3103470_marlin-finding-nemo-character-pixar-animation-hd-png.png" },
+            { name: "Stitch", img: "https://p.kindpng.com/picc/s/114-1145624_stitch-png-transparent-picture-stitch-tierno-y-esponjoso.png" },
+            { name: "Baymax", img: "https://p.kindpng.com/picc/s/576-5767648_thumb-image-baymax-png-vector-transparent-png.png" },
+            { name: "Moana", img: "https://p.kindpng.com/picc/s/107-1070548_moana-proud-moana-png-transparent-png.png" },
+            { name: "Maui", img: "https://p.kindpng.com/picc/s/128-1289078_moana-maui-maui-moana-png-transparent-png.png" },
+            { name: "Olaf", img: "https://p.kindpng.com/picc/s/94-946548_frozen-olaf-png-clipart-png-mart-olaf-frozen.png" },
+        ];
 
-</div>
+        const FIKTIONAL = [
+            { name: "Dracula", img: "https://p.kindpng.com/picc/s/207-2070618_conde-dracula-hotel-transylvania-hd-png-download.png" },
+            { name: "Frankenstein", img: "https://p.kindpng.com/picc/s/149-1493145_frankenstein-clipart-8-clipartix-frankenstein-clipart-hd-png.png" },
+            { name: "Frodo", img: "https://p.kindpng.com/picc/s/91-918976_frodobaggins-frodo-baggins-frodo-lotr-lord-of-frodo.png" },
+            { name: "Gandalf", img: "https://p.kindpng.com/picc/s/199-1991520_image-of-gandalf-hd-png-download.png" },
+            { name: "Geralt von Riva", img: "https://p.kindpng.com/picc/s/89-898009_geralt-of-rivia-png-image-transparent-png.png" },
+            { name: "Harry Potter", img: "https://p.kindpng.com/picc/s/12-129530_harry-potter-wand-harry-potter-hd-png-download.png" },
+            { name: "Hermine", img: "https://p.kindpng.com/picc/s/88-886571_transparent-hermione-png-hermione-granger-in-robes-png.png" },
+            { name: "Katniss Everdeen", img: "https://p.kindpng.com/picc/s/792-7928962_katniss-everdeen-png-image-katniss-everdeen-png-transparent.png" },
+            { name: "James Bond", img: "https://p.kindpng.com/picc/s/749-7497221_james-bond-png-transparent-daniel-craig-007-no.png" },
+            { name: "Batman", img: "https://p.kindpng.com/picc/s/14-149477_batman-the-animated-series-dcau-new-52-batman.png" },
+            { name: "Superman", img: "https://p.kindpng.com/picc/s/15-156687_superman-cartoon-png-classic-superman-comic-png-transparent.png" },
+            { name: "Wonder Woman", img: "https://p.kindpng.com/picc/s/109-1090744_download-wonder-woman-png-photos-493-transparent-background.png" },
+            { name: "Joker", img: "https://p.kindpng.com/picc/s/3-34269_joker-png-joker-transparent-background-png-download.png" },
+            { name: "Harley Quinn", img: "https://p.kindpng.com/picc/s/50-504132_transparent-suicide-squad-png-injustice-game-harley-quinn.png" },
+            { name: "Spiderman", img: "https://p.kindpng.com/picc/s/0-1402_spider-man-clip-art-all-body-png-spiderman.png" },
+            { name: "Lex Luthor", img: "https://p.kindpng.com/picc/s/492-4922296_wiki-png-download-background-lex-luthor-transparent-png.png" },
+            { name: "Bugs Bunny", img: "https://p.kindpng.com/picc/s/413-4139191_bugs-bunny-face-png-download-transparent-bugs-bunny.png" },
+            { name: "Shrek", img: "https://p.kindpng.com/picc/s/137-1371454_shrek-png-transparent-png.png" },
+            { name: "Perry", img: "https://p.kindpng.com/picc/s/243-2435515_donkey-shrek-smile-shrek-forever-after-poster-hd.png" },
+            { name: "Homer", img: "https://p.kindpng.com/picc/s/144-1448323_simpsons-hit-and-run-homer-hd-png-download.png" },
+            { name: "Bart", img: "https://p.kindpng.com/picc/s/159-1596393_bart-simpson-hd-png-download.png" },
+            { name: "Spongebob", img: "https://p.kindpng.com/picc/s/84-847409_sponge-bob-png-spongebob-squarepants-png-transparent-png.png" },
+            { name: "Patrick", img: "https://p.kindpng.com/picc/s/99-997635_spongebob-and-patrick-stickers-hd-png-download.png" },
+            { name: "Mario", img: "https://p.kindpng.com/picc/s/3-36900_mario-png-super-mario-bros-wii-mario-transparent.png" },
+            { name: "Link", img: "https://p.kindpng.com/picc/s/1-18820_link-smash-4-png-legend-of-zelda-tp.png" },
+            { name: "Lara Croft", img: "https://p.kindpng.com/picc/s/156-1560124_lara-croft-video-game-lara-croft-hd-png.png" },
+            { name: "Master Chief", img: "https://p.kindpng.com/picc/s/118-1183644_halo-2a-master-chief-hd-png-download.png" },
+            { name: "Kratos", img: "https://p.kindpng.com/picc/s/171-1717807_kratos-kratos-god-of-war-4-hd-png.png" },
+            { name: "Pikachu", img: "https://p.kindpng.com/picc/s/46-468972_anime-pokemon-png-transparent-image-fat-pikachu-png.png" },
+            { name: "Pennywise", img: "https://p.kindpng.com/picc/s/6-65631_full-body-new-pennywise-hd-png-download.png" },
+            { name: "Indiana Jones", img: "https://p.kindpng.com/picc/s/710-7109213_indiana-jones-2007-game-hd-png-download.png" },
+            { name: "Po", img: "https://p.kindpng.com/picc/s/16-162257_transparent-kung-fu-panda-png-image-free-download.png" },
+            { name: "Gollum", img: "https://p.kindpng.com/picc/s/255-2557153_statue-hd-png-download.png" },
+            { name: "Peach", img: "https://p.kindpng.com/picc/s/148-1484672_peaches-clipart-mario-new-super-mario-bros-2.png" },
+            { name: "Ciri", img: "https://p.kindpng.com/picc/s/594-5945542_ciri-the-witcher-png-picture-geralt-of-rivia.png" },
+            { name: "Jinx", img: "https://p.kindpng.com/picc/s/229-2295372_jinx-league-of-legends-png-transparent-png.png" },
+            { name: "Marge", img: "https://p.kindpng.com/picc/s/484-4841656_marge-simpson-png-transparent-png.png" },
+            { name: "Coraline", img: "https://p.kindpng.com/picc/s/362-3625537_coraline-doll-10-prop-replica-coraline-doll-hd.png" },
+            { name: "Peter Griffin", img: "https://p.kindpng.com/picc/s/118-1189165_peter-griffin-skate-queen-lol-peter-griffin.png" },
+            { name: "Phineas", img: "https://p.kindpng.com/picc/s/448-4484686_laughing-phineas-vector-by-phineas-png-transparent-png.png" },
+        ];
 
+        const LOL = [
+            { name: "Aatrox", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Aatrox.png" },
+            { name: "Ahri", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Ahri.png" },
+            { name: "Akali", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Akali.png" },
+            { name: "Akshan", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Akshan.png" },
+            { name: "Alistar", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Alistar.png" },
+            { name: "Amumu", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Amumu.png" },
+            { name: "Anivia", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Anivia.png" },
+            { name: "Annie", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Annie.png" },
+            { name: "Aphelios", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Aphelios.png" },
+            { name: "Ashe", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Ashe.png" },
+            { name: "Aurelion Sol", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/AurelionSol.png" },
+            { name: "Azir", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Azir.png" },
+            { name: "Bard", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Bard.png" },
+            { name: "Bel'Veth", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Belveth.png" },
+            { name: "Blitzcrank", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Blitzcrank.png" },
+            { name: "Brand", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Brand.png" },
+            { name: "Braum", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Braum.png" },
+            { name: "Briar", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Briar.png" },
+            { name: "Caitlyn", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Caitlyn.png" },
+            { name: "Camille", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Camille.png" },
+            { name: "Cassiopeia", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Cassiopeia.png" },
+            { name: "Cho'Gath", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Chogath.png" },
+            { name: "Corki", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Corki.png" },
+            { name: "Darius", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Darius.png" },
+            { name: "Diana", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Diana.png" },
+            { name: "Dr. Mundo", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/DrMundo.png" },
+            { name: "Draven", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Draven.png" },
+            { name: "Ekko", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Ekko.png" },
+            { name: "Elise", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Elise.png" },
+            { name: "Evelynn", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Evelynn.png" },
+            { name: "Ezreal", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Ezreal.png" },
+            { name: "Fiddlesticks", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Fiddlesticks.png" },
+            { name: "Fiora", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Fiora.png" },
+            { name: "Fizz", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Fizz.png" },
+            { name: "Galio", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Galio.png" },
+            { name: "Gangplank", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Gangplank.png" },
+            { name: "Garen", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Garen.png" },
+            { name: "Gnar", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Gnar.png" },
+            { name: "Gragas", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Gragas.png" },
+            { name: "Graves", img: "https://ddragon.leagueoflegends.com/cdn/14.5.1/img/champion/Graves.png" },
+        ];
 
-<script>
+        const ACTORS = [
+            // Männer (20)
+            { name: "Leonardo DiCaprio", img: "https://image.tmdb.org/t/p/w500/woUuRMdwv78onvSfsZTXOsI3uG7.jpg" },
+            { name: "Brad Pitt", img: "https://image.tmdb.org/t/p/w500/cc89SAA69L9R769v9gUEYI2o0pi.jpg" },
+            { name: "Tom Cruise", img: "https://image.tmdb.org/t/p/w500/8qB6BfUa7mGv867ZpUrh8pPFF46.jpg" },
+            { name: "Johnny Depp", img: "https://image.tmdb.org/t/p/w500/5v61689pZpI6v6pI6v6pI6v6pI6.jpg" },
+            { name: "Robert Downey Jr.", img: "https://image.tmdb.org/t/p/w500/5qpf9S9Uvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Will Smith", img: "https://image.tmdb.org/t/p/w500/2iYXDLeRhvS7Z9v9gUEYI2o0pi.jpg" },
+            { name: "Tom Hanks", img: "https://image.tmdb.org/t/p/w500/m70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Morgan Freeman", img: "https://image.tmdb.org/t/p/w500/o70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Denzel Washington", img: "https://image.tmdb.org/t/p/w500/p70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Keanu Reeves", img: "https://image.tmdb.org/t/p/w500/q70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Hugh Jackman", img: "https://image.tmdb.org/t/p/w500/r70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Ryan Reynolds", img: "https://image.tmdb.org/t/p/w500/s70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Dwayne Johnson", img: "https://image.tmdb.org/t/p/w500/t70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Chris Hemsworth", img: "https://image.tmdb.org/t/p/w500/u70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Matt Damon", img: "https://image.tmdb.org/t/p/w500/v70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "George Clooney", img: "https://image.tmdb.org/t/p/w500/w70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Harrison Ford", img: "https://image.tmdb.org/t/p/w500/x70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Samuel L. Jackson", img: "https://image.tmdb.org/t/p/w500/y70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Christian Bale", img: "https://image.tmdb.org/t/p/w500/z70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Joaquin Phoenix", img: "https://image.tmdb.org/t/p/w500/a70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
 
-const heroes = [
-{name:"Ana",img:"https://blzgdapipro-a.akamaihd.net/hero/ana/icon-portrait.png"},
-{name:"Ashe",img:"https://blzgdapipro-a.akamaihd.net/hero/ashe/icon-portrait.png"},
-{name:"Baptiste",img:"https://blzgdapipro-a.akamaihd.net/hero/baptiste/icon-portrait.png"},
-{name:"Bastion",img:"https://blzgdapipro-a.akamaihd.net/hero/bastion/icon-portrait.png"},
-{name:"Brigitte",img:"https://blzgdapipro-a.akamaihd.net/hero/brigitte/icon-portrait.png"},
-{name:"Cassidy",img:"https://blzgdapipro-a.akamaihd.net/hero/cassidy/icon-portrait.png"},
-{name:"D.Va",img:"https://blzgdapipro-a.akamaihd.net/hero/dva/icon-portrait.png"},
-{name:"Doomfist",img:"https://blzgdapipro-a.akamaihd.net/hero/doomfist/icon-portrait.png"},
-{name:"Echo",img:"https://blzgdapipro-a.akamaihd.net/hero/echo/icon-portrait.png"},
-{name:"Genji",img:"https://blzgdapipro-a.akamaihd.net/hero/genji/icon-portrait.png"},
-{name:"Hanzo",img:"https://blzgdapipro-a.akamaihd.net/hero/hanzo/icon-portrait.png"},
-{name:"Junkrat",img:"https://blzgdapipro-a.akamaihd.net/hero/junkrat/icon-portrait.png"},
-{name:"Kiriko",img:"IMG_9942.jpeg"},
-{name:"Lucio",img:"https://blzgdapipro-a.akamaihd.net/hero/lucio/icon-portrait.png"},
-{name:"Mei",img:"https://blzgdapipro-a.akamaihd.net/hero/mei/icon-portrait.png"},
-{name:"Mercy",img:"https://blzgdapipro-a.akamaihd.net/hero/mercy/icon-portrait.png"},
-{name:"Moira",img:"https://blzgdapipro-a.akamaihd.net/hero/moira/icon-portrait.png"},
-{name:"Pharah",img:"https://blzgdapipro-a.akamaihd.net/hero/pharah/icon-portrait.png"},
-{name:"Reaper",img:"https://blzgdapipro-a.akamaihd.net/hero/reaper/icon-portrait.png"},
-{name:"Reinhardt",img:"https://blzgdapipro-a.akamaihd.net/hero/reinhardt/icon-portrait.png"},
-{name:"Roadhog",img:"https://blzgdapipro-a.akamaihd.net/hero/roadhog/icon-portrait.png"},
-{name:"Sigma",img:"https://blzgdapipro-a.akamaihd.net/hero/sigma/icon-portrait.png"},
-{name:"Soldier 76",img:"IMG_9943.jpeg"},
-{name:"Sombra",img:"https://blzgdapipro-a.akamaihd.net/hero/sombra/icon-portrait.png"},
-{name:"Symmetra",img:"https://blzgdapipro-a.akamaihd.net/hero/symmetra/icon-portrait.png"},
-{name:"Tracer",img:"https://blzgdapipro-a.akamaihd.net/hero/tracer/icon-portrait.png"},
-{name:"Widowmaker",img:"https://blzgdapipro-a.akamaihd.net/hero/widowmaker/icon-portrait.png"},
-{name:"Winston",img:"https://blzgdapipro-a.akamaihd.net/hero/winston/icon-portrait.png"},
-{name:"Zarya",img:"https://blzgdapipro-a.akamaihd.net/hero/zarya/icon-portrait.png"},
-{name:"Zenyatta",img:"https://blzgdapipro-a.akamaihd.net/hero/zenyatta/icon-portrait.png"}
-];
+            // Frauen (20)
+            { name: "Scarlett Johansson", img: "https://image.tmdb.org/t/p/w500/6NsMbSmet6ueXcyStL0pYv3I3E7.jpg" },
+            { name: "Jennifer Lawrence", img: "https://image.tmdb.org/t/p/w500/hv7o3Vgfs9v9gUEYI2o0pi.jpg" },
+            { name: "Angelina Jolie", img: "https://image.tmdb.org/t/p/w500/e70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Margot Robbie", img: "https://image.tmdb.org/t/p/w500/pb99999999999999999999999999.jpg" },
+            { name: "Emma Watson", img: "https://image.tmdb.org/t/p/w500/g70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Meryl Streep", img: "https://image.tmdb.org/t/p/w500/h70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Julia Roberts", img: "https://image.tmdb.org/t/p/w500/i70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Natalie Portman", img: "https://image.tmdb.org/t/p/w500/j70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Anne Hathaway", img: "https://image.tmdb.org/t/p/w500/k70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Gal Gadot", img: "https://image.tmdb.org/t/p/w500/l70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Charlize Theron", img: "https://image.tmdb.org/t/p/w500/m70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Cate Blanchett", img: "https://image.tmdb.org/t/p/w500/n70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Sandra Bullock", img: "https://image.tmdb.org/t/p/w500/o70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Nicole Kidman", img: "https://image.tmdb.org/t/p/w500/p70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Zendaya", img: "https://image.tmdb.org/t/p/w500/q70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Viola Davis", img: "https://image.tmdb.org/t/p/w500/r70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Emma Stone", img: "https://image.tmdb.org/t/p/w500/s70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Penelope Cruz", img: "https://image.tmdb.org/t/p/w500/t70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Lupita Nyong'o", img: "https://image.tmdb.org/t/p/w500/u70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Saoirse Ronan", img: "https://image.tmdb.org/t/p/w500/v70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+        ];
 
-const disneyCharacters = [
-  { name: "Mickey", img: "https://p.kindpng.com/picc/s/695-6956083_disney-mickey-mouse-clubhouse-png-photo-mickey-mouse.png" },
-  { name: "Minnie", img: "https://p.kindpng.com/picc/s/18-187733_minnie-mouse-png-hd-minnie-mouse-transparent-png.png" },
-  { name: "Donald Duck", img: "https://p.kindpng.com/picc/s/141-1410301_donald-duck-png-transparent-png.png" },
-  { name: "Daisy Duck", img: "https://p.kindpng.com/picc/s/545-5455396_disney-clip-daisy-duck-hd-png-download.png" },
-  { name: "Goofy", img: "https://p.kindpng.com/picc/s/148-1487594_free-download-goofy-mickey-mouse-clipart-goofy-mickey.png" },
-  { name: "Pluto", img: "https://p.kindpng.com/picc/s/169-1693224_download-disney-pluto-transparent-pluto-dog-mickey-mouse.png" },
-  { name: "Snow White", img: "https://p.kindpng.com/picc/s/96-961049_queen-magic-mirror-seven-snow-white-png-transparent.png" },
-  { name: "Cinderella", img: "https://p.kindpng.com/picc/s/119-1196870_cinderella-png-transparent-cinderella-images-cinderella-disney-princess.png" },
-  { name: "Aurora", img: "https://p.kindpng.com/picc/s/9-92930_princess-aurora-cinderella-belle-ariel-rapunzel-princesa-aurora.png" },
-  { name: "Ariel", img: "https://p.kindpng.com/picc/s/79-792714_transparent-little-mermaid-sebastian-png-sirenita-ariel-png.png" },
-  { name: "Belle", img: "https://p.kindpng.com/picc/s/13-139157_belle-png-pic-disney-belle-in-yellow-dress.png" },
-  { name: "Jasmine", img: "https://p.kindpng.com/picc/s/187-1878841_princess-jasmine-png-free-download-cartoon-disney-princess.png" },
-  { name: "Pocahontas", img: "https://p.kindpng.com/picc/s/171-1714225_pocahontas-anna-elsa-fa-mulan-disney-princess-pocahontas.png" },
-  { name: "Mulan", img: "https://p.kindpng.com/picc/s/171-1718776_fa-mulan-png-background-image-mulan-and-the.png" },
-  { name: "Tiana", img: "https://p.kindpng.com/picc/s/231-2315891_princess-tiana-png-image-download-princesa-tiana-de.png" },
-  { name: "Rapunzel", img: "https://p.kindpng.com/picc/s/16-165238_transparent-rapunzel-hair-png-rapunzel-disney-png-download.png" },
-  { name: "Merida", img: "https://p.kindpng.com/picc/s/259-2590631_merida-princesse-disney-hd-png-download.png" },
-  { name: "Elsa", img: "https://p.kindpng.com/picc/s/116-1162517_elsa-png-transparent-high-resolution-elsa-png-png.png" },
-  { name: "Anna", img: "https://p.kindpng.com/picc/s/4-48619_anna-frozen-png-transparent-png.png" },
-  { name: "Simba", img: "https://p.kindpng.com/picc/s/79-790985_simba-png-download-image-simba-png-transparent-png.png" },
-  { name: "Nala", img: "https://p.kindpng.com/picc/s/269-2695077_nala-png-transparent-nala-lion-king-characters-png.png" },
-  { name: "Scar", img: "https://p.kindpng.com/picc/s/139-1397659_scar-cat-december-4-mouth-scar-the-lion.png" },
-  { name: "Timon", img: "https://p.kindpng.com/picc/s/575-5751553_timon-hd-png-download.png" },
-  { name: "Pumbaa", img: "https://p.kindpng.com/picc/s/79-792326_transparent-nala-clipart-pumbaa-from-the-lion-king.png" },
-  { name: "Aladdin", img: "https://p.kindpng.com/picc/s/168-1687550_aladdin-png-transparent-png.png" },
-  { name: "Genie", img: "https://p.kindpng.com/picc/s/99-990800_png-image-of-genie-genie-png-transparent-png.png" },
-  { name: "Jafar", img: "https://p.kindpng.com/picc/s/259-2595794_jafar-jafar-disney-villains-hd-png-download.png" },
-  { name: "Woody", img: "https://p.kindpng.com/picc/s/49-494804_toy-story-4-woody-hd-png-download.png" },
-  { name: "Buzz Lightyear", img: "https://p.kindpng.com/picc/s/30-305838_buzz-lightyear-flying-png-buzz-lightyear-of-star.png" },
-  { name: "Jessie", img: "https://p.kindpng.com/picc/s/375-3757870_download-zip-archive-toy-story-3-jessie-wii.png" },
-  { name: "Sulley", img: "https://p.kindpng.com/picc/s/377-3774847_sulley-wiki-monsters-inc-hd-png-download.png" },
-  { name: "Mike Wazowski", img: "https://p.kindpng.com/picc/s/149-1490354_mike-mikewazowski-mikewazowsky-mikewazowsky-pixar-transparent-mike-wazowski.png" },
-  { name: "Nemo", img: "https://p.kindpng.com/picc/s/39-390613_download-nemo-png-image-disney-infinity-nemo-transparent.png" },
-  { name: "Dory", img: "https://p.kindpng.com/picc/s/39-390658_dory-transparent-image-tv-film-png-images-finding.png" },
-  { name: "Marlin", img: "https://p.kindpng.com/picc/s/310-3103470_marlin-finding-nemo-character-pixar-animation-hd-png.png" },
-  { name: "Stitch", img: "https://p.kindpng.com/picc/s/114-1145624_stitch-png-transparent-picture-stitch-tierno-y-esponjoso.png" },
-  { name: "Baymax", img: "https://p.kindpng.com/picc/s/576-5767648_thumb-image-baymax-png-vector-transparent-png.png" },
-  { name: "Moana", img: "https://p.kindpng.com/picc/s/107-1070548_moana-proud-moana-png-transparent-png.png" },
-  { name: "Maui", img: "https://p.kindpng.com/picc/s/128-1289078_moana-maui-maui-moana-png-transparent-png.png" },
-  { name: "Olaf", img: "https://p.kindpng.com/picc/s/94-946548_frozen-olaf-png-clipart-png-mart-olaf-frozen.png" },
+        const CATEGORIES = {
+            overwatch: OVERWATCH,
+            disney: DISNEY,
+            fiktional: FIKTIONAL,
+            lol: LOL,
+            actors: ACTORS
+        };
 
-];
+        let currentCategory = 'overwatch';
+        let selectedHero = null;
+        let gameStarted = false;
+        let disabledHeroes = new Set();
 
-const fiktional = [
-  {name: "Dracula", img:"https://p.kindpng.com/picc/s/207-2070618_conde-dracula-hotel-transylvania-hd-png-download.png" },
-  {name: "Frankenstein", img:"https://p.kindpng.com/picc/s/149-1493145_frankenstein-clipart-8-clipartix-frankenstein-clipart-hd-png.png" },
-  {name: "Frodo", img:"https://p.kindpng.com/picc/s/91-918976_frodobaggins-frodo-baggins-frodo-lotr-lord-of-frodo.png" },
-  {name: "Gandalf", img:"https://p.kindpng.com/picc/s/199-1991520_image-of-gandalf-hd-png-download.png" },
-  {name: "Geralt von Riva", img:"https://p.kindpng.com/picc/s/89-898009_geralt-of-rivia-png-image-transparent-png.png" },
-  {name: "Harry Potter", img:"https://p.kindpng.com/picc/s/12-129530_harry-potter-wand-harry-potter-hd-png-download.png" },
-  {name: "Hermine", img:"https://p.kindpng.com/picc/s/88-886571_transparent-hermione-png-hermione-granger-in-robes-png.png" },
-  {name: "Katniss Everdeen", img:"https://p.kindpng.com/picc/s/792-7928962_katniss-everdeen-png-image-katniss-everdeen-png-transparent.png" },
-  {name: "James Bond", img:"https://p.kindpng.com/picc/s/749-7497221_james-bond-png-transparent-daniel-craig-007-no.png" },
-  {name: "Batman", img:"https://p.kindpng.com/picc/s/14-149477_batman-the-animated-series-dcau-new-52-batman.png" },
-  {name: "Superman", img:"https://p.kindpng.com/picc/s/15-156687_superman-cartoon-png-classic-superman-comic-png-transparent.png" },
-  {name: "Wonder Woman", img:"https://p.kindpng.com/picc/s/109-1090744_download-wonder-woman-png-photos-493-transparent-background.png" },
-  {name: "Joker", img:"https://p.kindpng.com/picc/s/3-34269_joker-png-joker-transparent-background-png-download.png" },
-  {name: "Harley Quinn", img:"https://p.kindpng.com/picc/s/50-504132_transparent-suicide-squad-png-injustice-game-harley-quinn.png" },
-  {name: "Spiderman", img:"https://p.kindpng.com/picc/s/0-1402_spider-man-clip-art-all-body-png-spiderman.png" },
-  {name: "Lex Luthor", img:"https://p.kindpng.com/picc/s/492-4922296_wiki-png-download-background-lex-luthor-transparent-png.png" },
-  {name: "Bugs Bunny", img:"https://p.kindpng.com/picc/s/413-4139191_bugs-bunny-face-png-download-transparent-bugs-bunny.png" },
-  {name: "Shrek", img:"https://p.kindpng.com/picc/s/137-1371454_shrek-png-transparent-png.png" },
-  {name: "Perry", img:"https://p.kindpng.com/picc/s/243-2435515_donkey-shrek-smile-shrek-forever-after-poster-hd.png" },
-  {name: "Homer", img:"https://p.kindpng.com/picc/s/144-1448323_simpsons-hit-and-run-homer-hd-png-download.png" },
-  {name: "Bart", img:"https://p.kindpng.com/picc/s/159-1596393_bart-simpson-hd-png-download.png" },
-  {name: "Spongebob", img:"https://p.kindpng.com/picc/s/84-847409_sponge-bob-png-spongebob-squarepants-png-transparent-png.png" },
-  {name: "Patrick", img:"https://p.kindpng.com/picc/s/99-997635_spongebob-and-patrick-stickers-hd-png-download.png" },
-  {name: "Mario", img:"https://p.kindpng.com/picc/s/3-36900_mario-png-super-mario-bros-wii-mario-transparent.png" },
-  {name: "Link", img:"https://p.kindpng.com/picc/s/1-18820_link-smash-4-png-legend-of-zelda-tp.png" },
-  {name: "Lara Croft", img:"https://p.kindpng.com/picc/s/156-1560124_lara-croft-video-game-lara-croft-hd-png.png" },
-  {name: "Master Chief", img:"https://p.kindpng.com/picc/s/118-1183644_halo-2a-master-chief-hd-png-download.png" },
-  {name: "Kratos", img:"https://p.kindpng.com/picc/s/171-1717807_kratos-kratos-god-of-war-4-hd-png.png" },
-  {name: "Pikachu", img:"https://p.kindpng.com/picc/s/46-468972_anime-pokemon-png-transparent-image-fat-pikachu-png.png" },
-  {name: "Pennywise", img:"https://p.kindpng.com/picc/s/6-65631_full-body-new-pennywise-hd-png-download.png" },
-  {name: "Indiana Jones", img:"https://p.kindpng.com/picc/s/710-7109213_indiana-jones-2007-game-hd-png-download.png" },
-  {name: "Po", img:"https://p.kindpng.com/picc/s/16-162257_transparent-kung-fu-panda-png-image-free-download.png" },
-  {name: "Gollum", img:"https://p.kindpng.com/picc/s/255-2557153_statue-hd-png-download.png" },
-  {name: "Peach", img:"https://p.kindpng.com/picc/s/148-1484672_peaches-clipart-mario-new-super-mario-bros-2.png" },
-  {name: "Ciri", img:"https://p.kindpng.com/picc/s/594-5945542_ciri-the-witcher-png-picture-geralt-of-rivia.png" },
-  {name: "Jinx", img:"https://p.kindpng.com/picc/s/229-2295372_jinx-league-of-legends-png-transparent-png.png" },
-  {name: "Marge", img:"https://p.kindpng.com/picc/s/484-4841656_marge-simpson-png-transparent-png.png" },
-  {name: "Coraline", img:"https://p.kindpng.com/picc/s/362-3625537_coraline-doll-10-prop-replica-coraline-doll-hd.png" },
-  {name: "Peter Griffin", img:"https://p.kindpng.com/picc/s/118-1189165_peter-griffin-skate-queen-lol-peter-griffin.png" },
-  {name: "Phineas", img:"https://p.kindpng.com/picc/s/448-4484686_laughing-phineas-vector-by-phineas-png-transparent-png.png" },
-  
-];
+        function renderGrid() {
+            const grid = document.getElementById('characterGrid');
+            grid.innerHTML = '';
+            
+            const heroes = CATEGORIES[currentCategory];
+            
+            heroes.forEach(hero => {
+                const card = document.createElement('div');
+                const isDisabled = disabledHeroes.has(hero.name);
+                const isSelected = selectedHero && selectedHero.name === hero.name;
+                
+                card.className = `bg-[#1e1e1e] p-2 rounded-xl cursor-pointer transition-all hover:scale-105 relative overflow-hidden group ${isDisabled ? 'card-disabled' : ''} ${isSelected ? 'card-selected' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="bg-black/20 rounded-lg mb-2 overflow-hidden">
+                        <img src="${hero.img}" alt="${hero.name}" class="w-full aspect-square object-contain" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${hero.name}'">
+                    </div>
+                    <div class="text-center text-sm font-medium truncate px-1">${hero.name}</div>
+                    ${isDisabled ? '<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><div class="w-full h-1 bg-red-500/50 rotate-45 absolute"></div><div class="w-full h-1 bg-red-500/50 -rotate-45 absolute"></div></div>' : ''}
+                `;
+                
+                card.onclick = () => handleCardClick(hero);
+                grid.appendChild(card);
+            });
+        }
 
-let currentCharacters = heroes;
+        function handleCardClick(hero) {
+            if (!gameStarted) {
+                selectedHero = hero;
+                gameStarted = true;
+                updateSidebar();
+                renderGrid();
+            } else {
+                if (disabledHeroes.has(hero.name)) {
+                    disabledHeroes.delete(hero.name);
+                } else {
+                    disabledHeroes.add(hero.name);
+                }
+                renderGrid();
+            }
+        }
 
-const grid = document.getElementById("grid");
-const chosenHero = document.getElementById("chosenHero");
-const info = document.getElementById("info");
+        function updateSidebar() {
+            const sidebar = document.getElementById('sidebarContent');
+            if (selectedHero) {
+                sidebar.innerHTML = `
+                    <div class="bg-black/20 rounded-xl mb-4 overflow-hidden shadow-inner">
+                        <img src="${selectedHero.img}" alt="${selectedHero.name}" class="w-full aspect-square object-contain" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${selectedHero.name}'">
+                    </div>
+                    <p class="text-2xl font-bold text-orange-500 mb-2">${selectedHero.name}</p>
+                    <p class="text-sm text-gray-400 italic">Spiel gestartet – klicke Charaktere weg, die es nicht sind!</p>
+                `;
+            } else {
+                sidebar.innerHTML = `
+                    <div class="py-12 text-gray-500">
+                        <p class="font-medium">Noch keiner gewählt</p>
+                        <p class="text-xs mt-2">Wähle zuerst einen Charakter aus dem Raster.</p>
+                    </div>
+                `;
+            }
+        }
 
-let gameStarted=false;
+        function resetGame() {
+            selectedHero = null;
+            gameStarted = false;
+            disabledHeroes.clear();
+            updateSidebar();
+            renderGrid();
+        }
 
-function createGrid(){
+        function changeCategory() {
+            currentCategory = document.getElementById('categorySelect').value;
+            resetGame();
+        }
 
-grid.innerHTML="";
-
-currentCharacters.forEach(hero=>{
-
-const card=document.createElement("div");
-card.className="card";
-
-card.innerHTML=`
-<img src="${hero.img}" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${hero.name}'">
-<div>${hero.name}</div>
-`;
-
-card.onclick=()=>{
-
-if(!gameStarted){
-
-document.querySelectorAll(".card").forEach(c=>c.classList.remove("selected"));
-card.classList.add("selected");
-
-chosenHero.innerHTML=`
-<img src="${hero.img}">
-<p>${hero.name}</p>
-`;
-
-info.textContent="Spiel gestartet – klicke Charaktere weg";
-
-gameStarted=true;
-
-}else{
-
-card.classList.toggle("disabled");
-
-}
-
-};
-
-grid.appendChild(card);
-
-});
-
-}
-
-function resetGame(){
-
-gameStarted=false;
-chosenHero.innerHTML="Noch keiner gewählt";
-info.textContent="Wähle zuerst einen Charakter.";
-createGrid();
-
-}
-
-
-
-function changeSet(){
-
-  const selected = document.getElementById("setSelector").value;
-
- if(selected === "overwatch"){
-   currentCharacters = heroes;
- }
-
- else if(selected === "disney"){
-   currentCharacters = disneyCharacters;
- }
-
- else if(selected === "fiktional"){
-   currentCharacters = fiktional;
- }
-
- createGrid();
-}
-
-createGrid();
-
-</script>
-
+        // Initial render
+        renderGrid();
+    </script>
 </body>
 </html>

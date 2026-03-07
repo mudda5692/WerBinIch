@@ -75,7 +75,7 @@
             { name: "Genji", img: "https://blzgdapipro-a.akamaihd.net/hero/genji/icon-portrait.png" },
             { name: "Hanzo", img: "https://blzgdapipro-a.akamaihd.net/hero/hanzo/icon-portrait.png" },
             { name: "Junkrat", img: "https://blzgdapipro-a.akamaihd.net/hero/junkrat/icon-portrait.png" },
-            { name: "Kiriko", img: "main/IMG_9942.jpeg" },
+            { name: "Kiriko", img: "IMG_9942.jpeg" },
             { name: "Lucio", img: "https://blzgdapipro-a.akamaihd.net/hero/lucio/icon-portrait.png" },
             { name: "Mei", img: "https://blzgdapipro-a.akamaihd.net/hero/mei/icon-portrait.png" },
             { name: "Mercy", img: "https://blzgdapipro-a.akamaihd.net/hero/mercy/icon-portrait.png" },
@@ -292,7 +292,7 @@
                     <div class="bg-black/20 rounded-xl mb-3 overflow-hidden">
                         <img src="${hero.img}" alt="${hero.name}" class="w-full aspect-square object-contain" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${hero.name}'">
                     </div>
-                    <div class="text-center text-base font-bold truncate px-1">${hero.name}</div>
+                    <div class="text-center text-sm font-bold truncate px-1">${hero.name}</div>
                     ${isDisabled ? '<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><div class="w-full h-1.5 bg-red-500/60 rotate-45 absolute"></div><div class="w-full h-1.5 bg-red-500/60 -rotate-45 absolute"></div></div>' : ''}
                 `;
                 

@@ -16,13 +16,13 @@
 </head>
 <body class="min-h-screen selection:bg-orange-500/30">
 
-    <header class="py-8 px-4 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+    <header class="py-12 px-4 text-center">
+        <h1 class="text-6xl md:text-7xl font-bold tracking-tight mb-10 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
             Wer bin ich?
         </h1>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <select id="categorySelect" onchange="changeCategory()" class="bg-[#1e1e1e] border border-white/10 rounded-lg px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all cursor-pointer w-full sm:w-64">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12">
+            <select id="categorySelect" onchange="changeCategory()" class="bg-[#1e1e1e] border border-white/10 rounded-xl px-6 py-4 text-2xl focus:outline-none focus:ring-4 focus:ring-orange-500 transition-all cursor-pointer w-full sm:w-80">
                 <option value="overwatch">Overwatch</option>
                 <option value="disney">Disney</option>
                 <option value="fiktional">Fiktional</option>
@@ -30,31 +30,31 @@
                 <option value="actors">Schauspieler</option>
             </select>
 
-            <button onclick="resetGame()" class="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-6 py-2 rounded-lg font-semibold transition-all active:scale-95 shadow-lg shadow-orange-900/20">
-                <span>↻</span> Reset
+            <button onclick="resetGame()" class="flex items-center gap-3 bg-orange-600 hover:bg-orange-500 text-white px-10 py-4 rounded-xl text-xl font-bold transition-all active:scale-95 shadow-2xl shadow-orange-900/40">
+                <span class="text-2xl">↻</span> Reset
             </button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 pb-20 flex flex-col lg:flex-row gap-8">
+    <main class="max-w-[1600px] mx-auto px-6 pb-32 flex flex-col lg:flex-row gap-12">
         <!-- Grid Section -->
         <div class="flex-1">
-            <div id="characterGrid" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+            <div id="characterGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
                 <!-- Cards will be injected here -->
             </div>
         </div>
 
         <!-- Sidebar Section -->
-        <aside class="lg:w-80 shrink-0">
-            <div class="sticky top-8 bg-[#1e1e1e] border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2 border-b border-white/5 pb-4">
+        <aside class="lg:w-[400px] shrink-0">
+            <div class="sticky top-12 bg-[#1e1e1e] border border-white/10 rounded-3xl p-8 shadow-2xl">
+                <h3 class="text-3xl font-bold mb-6 flex items-center gap-3 border-b border-white/5 pb-6">
                     <span class="text-orange-500">👤</span> Dein Charakter
                 </h3>
                 
                 <div id="sidebarContent" class="text-center">
-                    <div class="py-12 text-gray-500">
-                        <p class="font-medium">Noch keiner gewählt</p>
-                        <p class="text-xs mt-2">Wähle zuerst einen Charakter aus dem Raster.</p>
+                    <div class="py-20 text-gray-500">
+                        <p class="text-xl font-semibold">Noch keiner gewählt</p>
+                        <p class="text-sm mt-3">Wähle zuerst einen Charakter aus dem Raster.</p>
                     </div>
                 </div>
             </div>
@@ -226,48 +226,48 @@
 
         const ACTORS = [
             // Männer (20)
-            { name: "Leonardo DiCaprio", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Leonardo" },
-            { name: "Brad Pitt", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Brad" },
-            { name: "Tom Cruise", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cruise" },
-            { name: "Johnny Depp", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Johnny" },
-            { name: "Robert Downey Jr.", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Robert" },
-            { name: "Will Smith", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Will" },
-            { name: "Tom Hanks", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hanks" },
-            { name: "Morgan Freeman", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Morgan" },
-            { name: "Denzel Washington", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Denzel" },
-            { name: "Keanu Reeves", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Keanu" },
-            { name: "Hugh Jackman", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hugh" },
-            { name: "Ryan Reynolds", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ryan" },
-            { name: "Dwayne Johnson", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dwayne" },
-            { name: "Chris Hemsworth", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Chris" },
-            { name: "Matt Damon", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Matt" },
-            { name: "George Clooney", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=George" },
-            { name: "Harrison Ford", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Harrison" },
-            { name: "Samuel L. Jackson", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Samuel" },
-            { name: "Christian Bale", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Bale" },
-            { name: "Joaquin Phoenix", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Joaquin" },
+            { name: "Leonardo DiCaprio", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/woUuRMdwv78onvSfsZTXOsI3uG7.jpg" },
+            { name: "Brad Pitt", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/cc89SAA69L9R769v9gUEYI2o0pi.jpg" },
+            { name: "Tom Cruise", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/8qB6BfUa7mGv867ZpUrh8pPFF46.jpg" },
+            { name: "Johnny Depp", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/ilPB97876XfsSst6A2FFU9O6sZ.jpg" },
+            { name: "Robert Downey Jr.", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/5qHN3EBX7znSXm4u7vS9p69m9v.jpg" },
+            { name: "Will Smith", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/16pSst6A2FFU9O6sZ.jpg" },
+            { name: "Tom Hanks", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/297876XfsSst6A2FFU9O6sZ.jpg" },
+            { name: "Morgan Freeman", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/o70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Denzel Washington", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/p70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Keanu Reeves", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/q70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Hugh Jackman", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/r70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Ryan Reynolds", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/s70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Dwayne Johnson", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/t70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Chris Hemsworth", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/u70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Matt Damon", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/v70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "George Clooney", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/w70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Harrison Ford", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/x70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Samuel L. Jackson", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/y70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Christian Bale", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/z70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Joaquin Phoenix", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/a70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
 
             // Frauen (20)
-            { name: "Scarlett Johansson", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Scarlett" },
-            { name: "Jennifer Lawrence", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer" },
-            { name: "Angelina Jolie", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Angelina" },
-            { name: "Margot Robbie", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Margot" },
-            { name: "Emma Watson", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma" },
-            { name: "Meryl Streep", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Meryl" },
-            { name: "Julia Roberts", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Julia" },
-            { name: "Natalie Portman", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Natalie" },
-            { name: "Anne Hathaway", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anne" },
-            { name: "Gal Gadot", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Gal" },
-            { name: "Charlize Theron", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Charlize" },
-            { name: "Cate Blanchett", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cate" },
-            { name: "Sandra Bullock", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sandra" },
-            { name: "Nicole Kidman", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Nicole" },
-            { name: "Zendaya", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Zendaya" },
-            { name: "Viola Davis", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Viola" },
-            { name: "Emma Stone", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Stone" },
-            { name: "Penelope Cruz", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Penelope" },
-            { name: "Lupita Nyong'o", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lupita" },
-            { name: "Saoirse Ronan", img: "https://api.dicebear.com/7.x/avataaars/svg?seed=Saoirse" },
+            { name: "Scarlett Johansson", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/6NsMbSmet6ueXcyStL0pYv3I3E7.jpg" },
+            { name: "Jennifer Lawrence", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/hv7o3Vgfs9v9gUEYI2o0pi.jpg" },
+            { name: "Angelina Jolie", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/e70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Margot Robbie", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/pb99999999999999999999999999.jpg" },
+            { name: "Emma Watson", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/g70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Meryl Streep", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/h70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Julia Roberts", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/i70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Natalie Portman", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/j70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Anne Hathaway", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/k70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Gal Gadot", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/l70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Charlize Theron", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/m70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Cate Blanchett", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/n70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Sandra Bullock", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/o70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Nicole Kidman", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/p70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Zendaya", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/q70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Viola Davis", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/r70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Emma Stone", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/s70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Penelope Cruz", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/t70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Lupita Nyong'o", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/u70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
+            { name: "Saoirse Ronan", img: "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/v70S0R0uUVvfs9v9gUEYI2o0pi.jpg" },
         ];
 
         const CATEGORIES = {
@@ -294,14 +294,14 @@
                 const isDisabled = disabledHeroes.has(hero.name);
                 const isSelected = selectedHero && selectedHero.name === hero.name;
                 
-                card.className = `bg-[#1e1e1e] p-2 rounded-xl cursor-pointer transition-all hover:scale-105 relative overflow-hidden group ${isDisabled ? 'card-disabled' : ''} ${isSelected ? 'card-selected' : ''}`;
+                card.className = `bg-[#1e1e1e] p-6 rounded-[2rem] cursor-pointer transition-all hover:scale-105 relative overflow-hidden group shadow-2xl ${isDisabled ? 'card-disabled' : ''} ${isSelected ? 'card-selected' : ''}`;
                 
                 card.innerHTML = `
-                    <div class="bg-black/20 rounded-lg mb-2 overflow-hidden">
+                    <div class="bg-black/20 rounded-2xl mb-5 overflow-hidden">
                         <img src="${hero.img}" alt="${hero.name}" class="w-full aspect-square object-contain" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${hero.name}'">
                     </div>
-                    <div class="text-center text-sm font-medium truncate px-1">${hero.name}</div>
-                    ${isDisabled ? '<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><div class="w-full h-1 bg-red-500/50 rotate-45 absolute"></div><div class="w-full h-1 bg-red-500/50 -rotate-45 absolute"></div></div>' : ''}
+                    <div class="text-center text-2xl font-bold truncate px-1">${hero.name}</div>
+                    ${isDisabled ? '<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><div class="w-full h-2 bg-red-500/70 rotate-45 absolute"></div><div class="w-full h-2 bg-red-500/70 -rotate-45 absolute"></div></div>' : ''}
                 `;
                 
                 card.onclick = () => handleCardClick(hero);
@@ -329,17 +329,17 @@
             const sidebar = document.getElementById('sidebarContent');
             if (selectedHero) {
                 sidebar.innerHTML = `
-                    <div class="bg-black/20 rounded-xl mb-4 overflow-hidden shadow-inner">
+                    <div class="bg-black/20 rounded-3xl mb-8 overflow-hidden shadow-inner">
                         <img src="${selectedHero.img}" alt="${selectedHero.name}" class="w-full aspect-square object-contain" onerror="this.src='https://dummyimage.com/300x300/333/ffffff&text=${selectedHero.name}'">
                     </div>
-                    <p class="text-2xl font-bold text-orange-500 mb-2">${selectedHero.name}</p>
-                    <p class="text-sm text-gray-400 italic">Spiel gestartet – klicke Charaktere weg, die es nicht sind!</p>
+                    <p class="text-4xl font-black text-orange-500 mb-4">${selectedHero.name}</p>
+                    <p class="text-lg text-gray-400 italic">Spiel gestartet – klicke Charaktere weg, die es nicht sind!</p>
                 `;
             } else {
                 sidebar.innerHTML = `
-                    <div class="py-12 text-gray-500">
-                        <p class="font-medium">Noch keiner gewählt</p>
-                        <p class="text-xs mt-2">Wähle zuerst einen Charakter aus dem Raster.</p>
+                    <div class="py-20 text-gray-500">
+                        <p class="text-xl font-semibold">Noch keiner gewählt</p>
+                        <p class="text-sm mt-3">Wähle zuerst einen Charakter aus dem Raster.</p>
                     </div>
                 `;
             }
